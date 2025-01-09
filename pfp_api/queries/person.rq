@@ -1,0 +1,22 @@
+PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX owl2: <http://www.w3.org/2002/07/owl#>
+PREFIX owl: <http://www.w3.org/2002/7/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?person ?person2 ?label ?label2 ?g ?g2 ?uri
+WHERE {
+    GRAPH ?g {
+        ?person a crm:E21_Person ;
+               owl2:sameAs|owl:sameAs ?uri .
+        OPTIONAL { ?person rdfs:label ?label }
+    }
+
+    GRAPH ?g2 {
+        ?person2 a crm:E21_Person ;
+                 owl2:sameAs|owl:sameAs ?uri .
+        OPTIONAL { ?person2 rdfs:label ?label2 }
+    }
+
+    FILTER(?g != ?g2)
+    FILTER(STR(?g) < STR(?g2))
+}
