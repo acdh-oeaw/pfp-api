@@ -12,6 +12,7 @@ env = Environment(loader=PackageLoader("pfp_api"))
 
 
 class PersonParams(QueryParameters):
+    size: str = "foo"
     label: str = None
 
 
