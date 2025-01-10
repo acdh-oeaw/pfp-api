@@ -1,10 +1,12 @@
 PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT ?person ?label
+SELECT ?person ?label ?graph
 WHERE {
-?person a crm:E21_Person ;
-     rdfs:label ?label .
-     {% if label %}
-     FILTER CONTAINS(STR(?label), "{{ label }}")
-     {% endif %}
+  GRAPH ?graph {
+    ?person a crm:E21_Person ;
+    rdfs:label ?label .
+    {% if label %}
+    FILTER CONTAINS(STR(?label), "{{ label }}")
+    {% endif %}
+  }
 }
