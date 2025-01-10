@@ -1,10 +1,12 @@
+import binascii
+from base64 import urlsafe_b64decode
 from jinja2 import Environment, PackageLoader
 from typing import Annotated
-from fastapi import FastAPI, Query, Response, status
+from fastapi import FastAPI, Query, Response, status, HTTPException
 
 from rdfproxy import Page, SPARQLModelAdapter, QueryParameters
 
-from pfp_api.models import Person
+from pfp_api.models import Person, PersonDetail
 
 
 app = FastAPI()
@@ -29,3 +31,18 @@ def persons(query_parameters: Annotated[PersonParams, Query()]) -> Page[Person]:
         model=Person,
     )
     return adapter.query(query_parameters)
+
+
+@app.get("/person/{person_id}")
+def person(person_id: str):
+    template = env.get_template("person.j2")
+    try:
+        person_id = urlsafe_b64decode(person_id).decode()
+    except binascii.Error:
+        raise HTTPException(status_code=404, detail="Person not found")
+    adapter = SPARQLModelAdapter(
+        target="https://pfp-ts-backend.acdh-ch-dev.oeaw.ac.at/",
+        query=template.render({"person_id": person_id}),
+        model=PersonDetail
+    )
+    return adapter.query(QueryParameters())

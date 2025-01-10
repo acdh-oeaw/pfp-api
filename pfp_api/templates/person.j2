@@ -1,0 +1,6 @@
+PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?subject
+WHERE {
+  ?subject proxy_for <{{ person_id }}> .
+}
