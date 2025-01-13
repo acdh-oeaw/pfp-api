@@ -1,5 +1,5 @@
-PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+{% extends "base.rq" %}
+{% block query %}
 SELECT ?person ?label ?graph
 WHERE {
   GRAPH ?graph {
@@ -10,3 +10,4 @@ WHERE {
     {% endif %}
   }
 }
+{% endblock query %}
