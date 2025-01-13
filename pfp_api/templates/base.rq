@@ -1,0 +1,3 @@
+{% include "partials/prefixes.rq" %}
+{% block query %}
+{% endblock query %}

@@ -25,7 +25,7 @@ def root():
 
 @app.get("/persons")
 def persons(query_parameters: Annotated[PersonParams, Query()]) -> Page[Person]:
-    template = env.get_template("persons.j2")
+    template = env.get_template("persons.rq")
     adapter = SPARQLModelAdapter(
         target="https://pfp-ts-backend.acdh-ch-dev.oeaw.ac.at/",
         query=template.render(dict(query_parameters)),
@@ -36,7 +36,7 @@ def persons(query_parameters: Annotated[PersonParams, Query()]) -> Page[Person]:
 
 @app.get("/person/{person_id}")
 def person(person_id: str):
-    template = env.get_template("person.j2")
+    template = env.get_template("person.rq")
     try:
         person_id = urlsafe_b64decode(person_id).decode()
     except binascii.Error:

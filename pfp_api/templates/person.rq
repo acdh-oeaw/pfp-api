@@ -1,0 +1,7 @@
+{% extends "base.rq" %}
+{% block query %}
+SELECT ?subject
+WHERE {
+  ?subject pfp:proxy_for <{{ person_id }}> .
+}
+{% endblock query %}
