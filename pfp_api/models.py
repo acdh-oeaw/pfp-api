@@ -15,7 +15,5 @@ class Person(Entity):
     graph: str = None
 
 
-class PersonDetail(Entity):
-    person: str = None
-    label: str = Field(..., example="Arthur Schnitzler")
+class PersonDetail(Person):
     events: Optional[List[Event]] = None
