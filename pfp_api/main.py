@@ -2,7 +2,8 @@ import binascii
 from base64 import urlsafe_b64decode
 from jinja2 import Environment, PackageLoader
 from typing import Annotated
-from fastapi import FastAPI, Query, Response, status, HTTPException
+from fastapi import FastAPI, Query, HTTPException
+from fastapi.responses import RedirectResponse
 
 from rdfproxy import Page, SPARQLModelAdapter, QueryParameters
 
@@ -17,9 +18,9 @@ class PersonParams(QueryParameters):
     label: str = None
 
 
-@app.get("/")
+@app.get("/", response_class=RedirectResponse, status_code=302)
 def root():
-    return Response(status_code=status.HTTP_200_OK)
+    return "/docs"
 
 
 @app.get("/persons")
