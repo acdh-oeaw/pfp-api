@@ -1,13 +1,13 @@
 {% extends "base.rq" %}
 {% block query %}
-SELECT ?person ?label ?graph
+SELECT ?proxy ?label ?pfp_uri
 WHERE {
-  GRAPH ?graph {
-    ?person a crm:E21_Person ;
-    rdfs:label ?label .
-    {% if label %}
-    FILTER CONTAINS(STR(?label), "{{ label }}")
-    {% endif %}
-  }
+{SELECT ?proxy ?label where {
+	?proxy a crm:E21_Person ;
+     	rdfs:label ?label .
+	FILTER(CONTAINS(?label, "{{ label }}"))
+}
+}
+?proxy pfps:proxy_for ?pfp_uri .
 }
 {% endblock query %}

@@ -1,7 +1,118 @@
 {% extends "base.rq" %}
 {% block query %}
-SELECT ?subject
-WHERE {
-  ?subject pfp:proxy_for <{{ person_id }}> .
+SELECT DISTINCT ?subject ?eventType ?eventLabel ?startDate ?endDate ?related_entity ?relatedEntityLabel ?prov_entity ?event_id ?longitude ?latitude ?related_place ?relatedPlaceLabel WHERE {
+  BIND (<https://pfp-schema.acdh-ch-dev.oeaw.ac.at/schema#/{{ person_id }}> AS ?prov_entity)
+  ?subject pfps:proxy_for ?prov_entity .
+  OPTIONAL {
+    {
+      ?birthEvent crm:P98_brought_into_life ?subject .
+      BIND ("Birth" AS ?eventType)
+      BIND (?birthEvent AS ?event_id)
+      OPTIONAL {
+        ?birthEvent rdfs:label ?eventLabel
+      }
+      OPTIONAL {
+        ?birthEvent crm:P4_has_time-span/crm:P82a_begin_of_the_begin ?startDate
+      }
+      OPTIONAL {
+        ?birthEvent crm:P7_took_place_at ?related_place .
+        ?related_place rdfs:label ?relatedPlaceLabel
+        OPTIONAL {
+          ?related_place crm:P168_place_is_defined_by ?point .
+          FILTER (DATATYPE(?point) = sf:wktLiteral)
+	  	# Extract longitude (first number)
+  		BIND(replace(str(?point), "^[^0-9\\.-]*([-]?[0-9,]+) .*$", "$1") AS ?longStr)
+  		# Extract latitude (second number)
+ 		BIND(replace(str(?point), "^.* ([-]?[0-9,]+)[^0-9,]*$", "$1") AS ?latStr)
+
+  		# Convert comma to dot for decimal and cast to decimal type
+  		BIND(xsd:decimal(replace(?longStr, ",", ".")) AS ?longitude)
+  		BIND(xsd:decimal(replace(?latStr, ",", ".")) AS ?latitude)
+          # BIND (REPLACE(STR(?point), "Point \\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
+          # BIND (REPLACE(STR(?point), "^Point\\s*\\(\\s*[+-]?\\d+\\.\\d+\\s+([+-]?\\d+\\.\\d+)\\s*\\)$", "$1") AS ?latitude)
+        }
+      }
+    }
+    UNION {
+      ?deathEvent crm:P100_was_death_of ?subject .
+      BIND ("Death" AS ?eventType)
+      BIND (?deathEvent AS ?event_id)
+      OPTIONAL {
+        ?deathEvent rdfs:label ?eventLabel
+      }
+      OPTIONAL {
+        ?deathEvent crm:P4_has_time-span/crm:P82a_begin_of_the_begin ?startDate
+      }
+      OPTIONAL {
+        ?deathEvent crm:P7_took_place_at ?related_place .
+        ?related_place rdfs:label ?relatedPlaceLabel
+        OPTIONAL {
+          ?related_place crm:P168_place_is_defined_by ?point .
+          FILTER (DATATYPE(?point) = sf:wktLiteral)
+	  	# Extract longitude (first number)
+  		BIND(replace(str(?point), "^[^0-9\\.-]*([-]?[0-9,]+) .*$", "$1") AS ?longStr)
+  		# Extract latitude (second number)
+ 		BIND(replace(str(?point), "^.* ([-]?[0-9,]+)[^0-9,]*$", "$1") AS ?latStr)
+
+  		# Convert comma to dot for decimal and cast to decimal type
+  		BIND(xsd:decimal(replace(?longStr, ",", ".")) AS ?longitude)
+  		BIND(xsd:decimal(replace(?latStr, ",", ".")) AS ?latitude)
+          #BIND (REPLACE(STR(?point), "Point \\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
+          #BIND (REPLACE(STR(?point), "^Point\\s*\\(\\s*[+-]?\\d+\\.\\d+\\s+([+-]?\\d+\\.\\d+)\\s*\\)$", "$1") AS ?latitude)
+        }
+      }
+    }
+    UNION {
+      ?subject crm:P143i_was_joined_by ?joinEvent .
+      BIND ("Joining Group" AS ?eventType)
+      BIND (?joinEvent AS ?event_id)
+      OPTIONAL {
+        ?joinEvent rdfs:label ?eventLabel
+      }
+      OPTIONAL {
+        ?joinEvent crm:P4_has_time-span/crm:P82a_begin_of_the_begin ?startDate
+      }
+      OPTIONAL {
+        ?joinEvent crm:P144_joined_with ?related_entity .
+        ?related_entity rdfs:label ?relatedEntityLabel
+      }
+      OPTIONAL {
+        ?joinEvent crm:P7_took_place_at ?related_place .
+        ?related_place rdfs:label ?relatedPlaceLabel
+        OPTIONAL {
+          ?related_place crm:P168_place_is_defined_by ?point .
+          FILTER (DATATYPE(?point) = sf:wktLiteral)
+          BIND (REPLACE(STR(?point), "Point \\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
+          BIND (REPLACE(STR(?point), "^Point\\s*\\(\\s*[+-]?\\d+\\.\\d+\\s+([+-]?\\d+\\.\\d+)\\s*\\)$", "$1") AS ?latitude)
+        }
+      }
+    }
+    UNION {
+      ?subject crm:P145i_left_by ?leaveEvent .
+      BIND ("Leaving Group" AS ?eventType)
+      BIND (?leaveEvent AS ?event_id)
+      OPTIONAL {
+        ?leaveEvent rdfs:label ?eventLabel
+      }
+      OPTIONAL {
+        ?leaveEvent crm:P4_has_time-span/crm:P82a_begin_of_the_begin ?startDate
+      }
+      OPTIONAL {
+        ?leaveEvent crm:P146_separated_from ?related_entity .
+        ?related_entity rdfs:label ?relatedEntityLabel
+      }
+      OPTIONAL {
+        ?leaveEvent crm:P7_took_place_at ?related_place .
+        ?related_place rdfs:label ?relatedPlaceLabel
+        OPTIONAL {
+          ?related_place crm:P168_place_is_defined_by ?point .
+          FILTER (DATATYPE(?point) = sf:wktLiteral)
+          BIND (REPLACE(STR(?point), "Point\\s*\\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
+          BIND (REPLACE(STR(?point), "^Point\\s*\\(\\s*[+-]?\\d+\\.\\d+\\s+([+-]?\\d+\\.\\d+)\\s*\\)$", "$1") AS ?latitude)
+        }
+      }
+    }
+  }
 }
+
 {% endblock query %}
