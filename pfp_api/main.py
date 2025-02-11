@@ -1,5 +1,3 @@
-import binascii
-from base64 import urlsafe_b64decode
 from jinja2 import Environment, PackageLoader
 from typing import Annotated
 from fastapi import FastAPI, Query, HTTPException
@@ -37,13 +35,26 @@ def persons(query_parameters: Annotated[PersonParams, Query()]) -> Page[Person]:
 @app.get("/person/{person_id}")
 def person(person_id: str):
     template = env.get_template("person.rq")
-    try:
-        person_id = urlsafe_b64decode(person_id).decode()
-    except binascii.Error:
-        raise HTTPException(status_code=404, detail="Person not found")
+#    try:
+#        person_id = urlsafe_b64decode(person_id).decode()
+#    except binascii.Error:
+#        raise HTTPException(status_code=404, detail="Person not found")
+    print(template.render({"person_id": person_id}))
     adapter = SPARQLModelAdapter(
         target="https://pfp-ts-backend.acdh-ch-dev.oeaw.ac.at/",
         query=template.render({"person_id": person_id}),
         model=PersonDetail
     )
-    return adapter.query(QueryParameters())
+    data = adapter.query(QueryParameters()).items
+    if len(data) == 1:
+        return data[0]
+    elif len(data) > 1:
+        raise HTTPException(
+            status_code=500,
+            detail="Multiple records found when only one was expected"
+        )
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail="Item not found"
+        )
