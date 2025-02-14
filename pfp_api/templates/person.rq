@@ -20,14 +20,13 @@ SELECT DISTINCT ?subject ?eventType ?eventLabel ?startDate ?endDate ?related_ent
         OPTIONAL {
           ?related_place crm:P168_place_is_defined_by ?point .
           FILTER (DATATYPE(?point) = sf:wktLiteral)
-	  	# Extract longitude (first number)
-  		BIND(replace(str(?point), "^[^0-9\\.-]*([-]?[0-9,]+) .*$", "$1") AS ?longStr)
-  		# Extract latitude (second number)
- 		BIND(replace(str(?point), "^.* ([-]?[0-9,]+)[^0-9,]*$", "$1") AS ?latStr)
-
-  		# Convert comma to dot for decimal and cast to decimal type
-  		BIND(xsd:decimal(replace(?longStr, ",", ".")) AS ?longitude)
-  		BIND(xsd:decimal(replace(?latStr, ",", ".")) AS ?latitude)
+          # Extract coordinates from Point format
+          BIND(replace(str(?point), "^Point\\s*\\(\\s*([+-]?\\d+(?:[.,]\\d+)?)\\s*[+-]?\\d+(?:[.,]\\d+)?\\s*\\)$", "$1") AS ?longStr)
+          BIND(replace(str(?point), "^Point\\s*\\(\\s*[+-]?\\d+(?:[.,]\\d+)?\\s*([+-]?\\d+(?:[.,]\\d+)?)\\s*\\)$", "$1") AS ?latStr)
+          
+          # Convert comma to dot for decimal and cast to decimal type
+          BIND(xsd:decimal(replace(?longStr, ",", ".")) AS ?longitude)
+          BIND(xsd:decimal(replace(?latStr, ",", ".")) AS ?latitude)
           # BIND (REPLACE(STR(?point), "Point \\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
           # BIND (REPLACE(STR(?point), "^Point\\s*\\(\\s*[+-]?\\d+\\.\\d+\\s+([+-]?\\d+\\.\\d+)\\s*\\)$", "$1") AS ?latitude)
         }
@@ -49,15 +48,15 @@ SELECT DISTINCT ?subject ?eventType ?eventLabel ?startDate ?endDate ?related_ent
         OPTIONAL {
           ?related_place crm:P168_place_is_defined_by ?point .
           FILTER (DATATYPE(?point) = sf:wktLiteral)
-	  	# Extract longitude (first number)
-  		BIND(replace(str(?point), "^[^0-9\\.-]*([-]?[0-9,]+) .*$", "$1") AS ?longStr)
-  		# Extract latitude (second number)
- 		BIND(replace(str(?point), "^.* ([-]?[0-9,]+)[^0-9,]*$", "$1") AS ?latStr)
-
-  		# Convert comma to dot for decimal and cast to decimal type
-  		BIND(xsd:decimal(replace(?longStr, ",", ".")) AS ?longitude)
-  		BIND(xsd:decimal(replace(?latStr, ",", ".")) AS ?latitude)
-          #BIND (REPLACE(STR(?point), "Point \\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
+          # Extract coordinates from Point format
+          BIND(replace(str(?point), "^Point\\s*\\(\\s*([+-]?\\d+(?:[.,]\\d+)?)\\s*[+-]?\\d+(?:[.,]\\d+)?\\s*\\)$", "$1") AS ?longStr)
+          BIND(replace(str(?point), "^Point\\s*\\(\\s*[+-]?\\d+(?:[.,]\\d+)?\\s*([+-]?\\d+(?:[.,]\\d+)?)\\s*\\)$", "$1") AS ?latStr)
+          
+          # Convert comma to dot for decimal and cast to decimal type
+          BIND(xsd:decimal(replace(?longStr, ",", ".")) AS ?longitude)
+          BIND(xsd:decimal(replace(?latStr, ",", ".")) AS ?latitude)
+          
+	  #BIND (REPLACE(STR(?point), "Point \\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
           #BIND (REPLACE(STR(?point), "^Point\\s*\\(\\s*[+-]?\\d+\\.\\d+\\s+([+-]?\\d+\\.\\d+)\\s*\\)$", "$1") AS ?latitude)
         }
       }
@@ -82,8 +81,13 @@ SELECT DISTINCT ?subject ?eventType ?eventLabel ?startDate ?endDate ?related_ent
         OPTIONAL {
           ?related_place crm:P168_place_is_defined_by ?point .
           FILTER (DATATYPE(?point) = sf:wktLiteral)
-          BIND (REPLACE(STR(?point), "Point \\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
-          BIND (REPLACE(STR(?point), "^Point\\s*\\(\\s*[+-]?\\d+\\.\\d+\\s+([+-]?\\d+\\.\\d+)\\s*\\)$", "$1") AS ?latitude)
+          # Extract coordinates from Point format
+          BIND(replace(str(?point), "^Point\\s*\\(\\s*([+-]?\\d+(?:[.,]\\d+)?)\\s*[+-]?\\d+(?:[.,]\\d+)?\\s*\\)$", "$1") AS ?longStr)
+          BIND(replace(str(?point), "^Point\\s*\\(\\s*[+-]?\\d+(?:[.,]\\d+)?\\s*([+-]?\\d+(?:[.,]\\d+)?)\\s*\\)$", "$1") AS ?latStr)
+          
+          # Convert comma to dot for decimal and cast to decimal type
+          BIND(xsd:decimal(replace(?longStr, ",", ".")) AS ?longitude)
+          BIND(xsd:decimal(replace(?latStr, ",", ".")) AS ?latitude)
         }
       }
     }
@@ -107,8 +111,13 @@ SELECT DISTINCT ?subject ?eventType ?eventLabel ?startDate ?endDate ?related_ent
         OPTIONAL {
           ?related_place crm:P168_place_is_defined_by ?point .
           FILTER (DATATYPE(?point) = sf:wktLiteral)
-          BIND (REPLACE(STR(?point), "Point\\s*\\( \\+?(-?\\d+.\\d+).*", "$1") AS ?longitude)
-          BIND (REPLACE(STR(?point), "^Point\\s*\\(\\s*[+-]?\\d+\\.\\d+\\s+([+-]?\\d+\\.\\d+)\\s*\\)$", "$1") AS ?latitude)
+          # Extract coordinates from Point format
+          BIND(replace(str(?point), "^Point\\s*\\(\\s*([+-]?\\d+(?:[.,]\\d+)?)\\s*[+-]?\\d+(?:[.,]\\d+)?\\s*\\)$", "$1") AS ?longStr)
+          BIND(replace(str(?point), "^Point\\s*\\(\\s*[+-]?\\d+(?:[.,]\\d+)?\\s*([+-]?\\d+(?:[.,]\\d+)?)\\s*\\)$", "$1") AS ?latStr)
+          
+          # Convert comma to dot for decimal and cast to decimal type
+          BIND(xsd:decimal(replace(?longStr, ",", ".")) AS ?longitude)
+          BIND(xsd:decimal(replace(?latStr, ",", ".")) AS ?latitude)
         }
       }
     }
